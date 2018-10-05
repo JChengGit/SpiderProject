@@ -1,0 +1,40 @@
+﻿import json
+import pandas
+from pandas import DataFrame,Series
+
+
+def read_data():
+    a = open('female2.txt', encoding='UTF-8-sig')
+    b = a.read()
+    c = b.split('\n')[:-1]
+    users = []
+    for i in c:
+        d = i.replace("'", '"').replace('\\', '')
+        e = json.loads(d)
+        users.append(e)
+    return users
+
+def result_by_any(by_str,result,begin, end):
+    users = read_data()
+    sets = list()
+    for i in users:
+        if begin <= int(i[by_str][:2]) <= end:
+            if i[result] not in sets:
+                sets.append(i[result])
+    count = dict.fromkeys(sets,0)
+    for i in users:
+        if begin <= int(i[by_str][:2]) <= end:
+            count[i[result]] += 1
+
+    # count['无信息'] = count.pop('-- ')
+    total = sum(count.values())
+    distribution = {}
+    for key, value in count.items():
+        distribution[key] = [value, '%.0f%%' % (value / total * 100)]
+    return distribution
+
+result = result_by_any('age','身高：',0,40)
+print(result)
+
+df = DataFrame(result)
+print(df)
